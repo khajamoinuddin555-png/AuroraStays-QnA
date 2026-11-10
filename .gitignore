@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+
+# IDE
+.vscode/
+
+# Logs
+*.log
+
+# Model cache
+.cache/
+
+# OS files
+.DS_Store
+Thumbs.db

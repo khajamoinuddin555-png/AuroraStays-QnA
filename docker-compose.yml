@@ -1,0 +1,23 @@
+
+services:
+  backend:
+    image: aurorastays-backend:latest
+    container_name: aurorastays-backend
+    env_file:
+      - .env
+    ports:
+      - "7860:5000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: aurorastays-frontend
+    environment:
+      BACKEND_URL: http://backend:5000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    restart: unless-stopped
