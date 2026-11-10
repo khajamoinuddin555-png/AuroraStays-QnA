@@ -295,3 +295,15 @@ By combining document processing, hybrid retrieval, vector search, and LLM-based
 **Deployment:** Docker  
 **Interface:** Streamlit  
 **Backend:** Flask
+
+
+## Project Screenshots
+
+### 1. Frontend – Backend Connected
+![Frontend Connected](<Output Screenshots/Frontend – Backend Connected.png>)
+
+### 2. Hotel Cancellation Policy – Q&A
+![Cancellation Policy](<Output Screenshots/Hotel Cancellation Policy – Q&A.png>)
+
+### 3. Partial Refund Policy – Q&A
+![Partial Refund](<Output Screenshots/Partial Refund Policy – Q&A.png>)
