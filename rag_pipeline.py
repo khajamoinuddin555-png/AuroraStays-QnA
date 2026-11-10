@@ -46,7 +46,14 @@ print("Hybrid retriever initialized successfully.")
 # 3. RAG QUESTION-ANSWERING FUNCTION
 # ============================================================
 
-def ask_question(question):
+def ask_question(
+    question,
+    top_k=TOP_K,
+    model_name=None,
+    temperature=0,
+    top_p=1,
+    max_tokens=500
+):
 
     if not question or not question.strip():
         raise ValueError("Please enter a valid question.")
@@ -176,19 +183,21 @@ Do not make unsupported promises.
 
 
     response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt
-            },
-            {
-                "role": "user",
-                "content": user_prompt
-            }
-        ],
-        temperature=0
-    )
+    model=model_name or MODEL_NAME,
+    messages=[
+        {
+            "role": "system",
+            "content": system_prompt
+        },
+        {
+            "role": "user",
+            "content": user_prompt
+        }
+    ],
+    temperature=temperature,
+    top_p=top_p,
+    max_tokens=max_tokens
+)
 
     answer = response.choices[0].message.content
 
