@@ -18,8 +18,43 @@ BACKEND_URL = os.getenv(
     "http://127.0.0.1:5000"
 )
 
-ASK_API = f"{BACKEND_URL}/ask"
+ASK_API = f"{BACKEND_URL}/v1/answer_with_relevant_chunks"
 HEALTH_API = f"{BACKEND_URL}/health"
+
+# --------------------------------------------------
+# SIDEBAR - CONFIGURABLE PARAMETERS
+# --------------------------------------------------
+
+st.sidebar.header("⚙️ Parameters")
+
+# Number of chunks to retrieve
+k = st.sidebar.slider(
+    "K (chunks to retrieve)",
+    min_value=1,
+    max_value=10,
+    value=2,
+    step=1
+)
+
+# LLM temperature
+temperature = st.sidebar.slider(
+    "Temperature",
+    min_value=0.0,
+    max_value=2.0,
+    value=0.0,
+    step=0.1
+)
+
+# Maximum response tokens
+max_tokens = st.sidebar.slider(
+    "Max tokens",
+    min_value=64,
+    max_value=2048,
+    value=512,
+    step=64
+)
+
+
 
 # --------------------------------------------------
 # Custom Styling
@@ -97,6 +132,15 @@ with st.form("question_form"):
         height=100
     )
 
+    response_mode = st.radio(
+        "Response Mode:",
+        [
+            "Answer only",
+            "Answer + Relevant Chunks"
+        ],
+        horizontal=True
+    )
+
     submitted = st.form_submit_button(
         "Ask Question",
         type="primary"
@@ -106,18 +150,27 @@ with st.form("question_form"):
 # Send Question to Flask Backend
 # --------------------------------------------------
 
+
+
 if submitted:
 
     if not question.strip():
         st.warning("Please enter a question.")
+
     else:
-
         try:
-            with st.spinner("Searching hotel policies and generating an answer..."):
-
+            with st.spinner(
+                "Searching hotel policies and generating an answer..."
+            ):
                 response = requests.post(
                     ASK_API,
-                    json={"question": question.strip()},
+                    json={
+                        "query": question.strip(),
+                        "k": k,
+                        "temperature": temperature,
+                        "top_p": 1,
+                        "max_tokens": max_tokens
+                    },
                     timeout=120
                 )
 
@@ -126,6 +179,10 @@ if submitted:
 
             if result.get("status") == "success":
 
+                # ----------------------------------
+                # Display Answer
+                # ----------------------------------
+
                 st.subheader("Answer")
 
                 st.markdown(
@@ -133,39 +190,52 @@ if submitted:
                     unsafe_allow_html=True
                 )
 
-                # --------------------------------------
-                # Supporting Sources
-                # --------------------------------------
+              
+                # ----------------------------------
+                # Display Supporting Sources
+                # ----------------------------------
 
-                st.subheader("Supporting Sources")
+                if response_mode == "Answer + Relevant Chunks":
 
-                for source in result.get("sources", []):
-                    st.markdown(
-                        f"- **{source['source']}** "
-                        f"(Score: {source['hybrid_score']:.4f})"
-                    )
+                    chunks = result.get("chunks", [])
 
-                # --------------------------------------
-                # Relevant Retrieved Chunks
-                # --------------------------------------
+                    st.subheader("Supporting Sources")
 
-                st.subheader("Relevant Retrieved Chunks")
+                    if chunks:
+                        unique_sources = list(dict.fromkeys(
+                            chunk["metadata"]["source"]
+                            for chunk in chunks
+                        ))
 
-                for index, chunk in enumerate(
-                    result.get("relevant_chunks", []),
-                    start=1
-                ):
+                        for source in unique_sources:
+                            st.markdown(f"- **{source}**")
 
-                    with st.expander(
-                        f"Chunk {index} | {chunk['source']} | "
-                        f"Score: {chunk['hybrid_score']:.4f}"
-                    ):
+                    else:
+                        st.info("No supporting sources found.")
 
-                        st.write(
-                            f"**Chunk ID:** {chunk['chunk_id']}"
-                        )
+                    # ----------------------------------
+                    # Relevant Retrieved Chunks
+                    # ----------------------------------
 
-                        st.write(chunk["text"])
+                    st.subheader("Relevant Retrieved Chunks")
+
+                    if chunks:
+                        for index, chunk in enumerate(chunks, start=1):
+
+                            metadata = chunk["metadata"]
+
+                            with st.expander(
+                                f"Chunk {index} | {metadata['source']} | "
+                                f"Score: {metadata['hybrid_score']:.4f}"
+                            ):
+                                st.write(
+                                    f"**Chunk ID:** {metadata['chunk_id']}"
+                                )
+
+                                st.write(chunk["text"])
+
+                    else:
+                        st.info("No relevant chunks found.")
 
             else:
                 st.error(
@@ -176,19 +246,14 @@ if submitted:
                 )
 
         except requests.exceptions.Timeout:
-            st.error(
-                "The request timed out. Please try again."
-            )
+            st.error("The request timed out. Please try again.")
 
         except requests.exceptions.RequestException as error:
-            st.error(
-                f"Backend connection error: {error}"
-            )
+            st.error(f"Backend connection error: {error}")
 
         except Exception as error:
-            st.error(
-                f"Unexpected error: {error}"
-            )
+            st.error(f"Unexpected error: {error}")
+
 
 # --------------------------------------------------
 # Footer

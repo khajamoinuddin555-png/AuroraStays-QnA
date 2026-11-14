@@ -61,7 +61,7 @@ def ask_question(
     # Retrieve relevant policy chunks
     retrieved_chunks = hybrid_search(
         question,
-        top_k=TOP_K
+        top_k=top_k
     )
 
     if not retrieved_chunks:

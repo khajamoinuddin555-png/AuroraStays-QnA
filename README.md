@@ -302,8 +302,26 @@ By combining document processing, hybrid retrieval, vector search, and LLM-based
 ### 1. Frontend – Backend Connected
 ![Frontend Connected](<Output Screenshots/Frontend – Backend Connected.png>)
 
-### 2. Hotel Cancellation Policy – Q&A
-![Cancellation Policy](<Output Screenshots/Hotel Cancellation Policy – Q&A.png>)
+### 2. Frontend – Backend Connected
 
-### 3. Partial Refund Policy – Q&A
-![Partial Refund](<Output Screenshots/Partial Refund Policy – Q&A.png>)
+This screenshot shows the AuroraStays Q&A application frontend home page.
+
+![Frontend](<Output Screenshots/Screenshot 2026-11-14 162254.png>)
+
+### 3. Hotel Check-in and Check-out Policy
+
+This screenshot shows the answer to a question about hotel check-in and check-out timings.
+
+![Check-in and Check-out](<Output Screenshots/Screenshot 2026-11-14 162403.png>)
+
+### 4. Hotel Cancellation and Refund Policy
+
+This screenshot shows the answer to a question about hotel cancellation and refund policies.
+
+![Cancellation and Refund](<Output Screenshots/Screenshot 2026-11-14 162511.png>)
+
+### 5. Hotel Pet Policy
+
+This screenshot shows the answer to the question: Are pets allowed?
+
+![Pet Policy](<Output Screenshots/Screenshot 2026-11-14 162719.png>)
